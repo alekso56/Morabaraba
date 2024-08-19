@@ -1,0 +1,13 @@
+name: MorrisInfinity
+version: 1.0.0
+main: io.github.alekso56.MorrisInfinity.MorrisInfinity
+author: alekso56
+description: Play a game of morris
+api-version: 1.19
+commands:
+     morris:
+      description: Start/stop games.
+permissions:
+  morris.start:
+    description: Allow players to engange in games.
+    default: op
