@@ -58,11 +58,6 @@ public class Game {
 			state.setTurn("white");
 		}
 		}
-		//1 = phase 1 - placing stage
-		//2 = phase 2 - movement stage
-		//3 = valid piece selected to move adjacently 
-		//4 = mill created - remove opponent's piece
-		//5 = game end - draw, or player wins
 		if(state.getGameStage() == 1) {
 			int remaining = 0;
 			if(state.getTurn().equals("white")) {

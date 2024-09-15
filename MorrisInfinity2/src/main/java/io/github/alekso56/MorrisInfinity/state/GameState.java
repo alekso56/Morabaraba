@@ -95,6 +95,11 @@ public class GameState {
 		return millsFound;
 	}
 	
+	/*1 = phase 1 - placing stage
+	2 = phase 2 - movement stage
+	3 = valid piece selected to move adjacently 
+	4 = mill created - remove opponent's piece
+	5 = game end - draw, or player wins*/
 	public int getGameStage() {
 		return gameStage;
 	}

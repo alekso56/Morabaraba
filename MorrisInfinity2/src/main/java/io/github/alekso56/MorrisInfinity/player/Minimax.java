@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.Stack;
 
 import io.github.alekso56.MorrisInfinity.Game;
+import io.github.alekso56.MorrisInfinity.MorrisInfinity;
 import io.github.alekso56.MorrisInfinity.state.GameState;
 
 public class Minimax {
@@ -264,14 +265,17 @@ public class Minimax {
 		if(endgame=="white") {
     		game.displayMessage(3);
     		game.getState().setGameStage(5);
+    		MorrisInfinity.setGame(null);
     	}
     	else if(endgame=="black") {
     		game.displayMessage(4);
     		game.getState().setGameStage(5);
+    		MorrisInfinity.setGame(null);
     	}
     	else if(endgame=="draw") {
     		game.displayMessage(5);
     		game.getState().setGameStage(5);
+    		MorrisInfinity.setGame(null);
     	}
 		return false;
 	}

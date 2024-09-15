@@ -1,5 +1,6 @@
 package io.github.alekso56.MorrisInfinity;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import org.bukkit.ChatColor;
@@ -10,15 +11,20 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+
+import io.github.alekso56.MorrisInfinity.state.DisplayPoolEntry;
 
 public class Board {
 
@@ -30,9 +36,12 @@ public class Board {
 	int numBlack = 0;
 
 	public static Location gameOrigin;
+	
+	public ArrayList<DisplayPoolEntry> pool;
 
 	public Board(Game game) {
 		this.game = game;
+		this.pool = new ArrayList<DisplayPoolEntry>();
 	}
 
 	public void updatePieceSingle(int point) {
@@ -47,39 +56,52 @@ public class Board {
 		}
 
 	}
-
-	private void clearDisplayItems() {
-		for (Entity entity : gameOrigin.getWorld().getNearbyEntities(gameOrigin, 10, 10, 10)) {
-			if (entity instanceof BlockDisplay) {
-				entity.remove();
-			}
-		}
-	}
-	private void updateBlock(int x, int y, Material air) {
-		updateBlock(x,y,air,false);
-	}
-	private void updateBlock(int x, int y, Material air,boolean clear) {
-		Location blockToUpdate = new Location(gameOrigin.getWorld(), x+ 0.5, 1, y+ 0.5);
-		if(air.name().contains("GREEN")) {
-			blockToUpdate = new Location(gameOrigin.getWorld(), x+ 0.5, 1.5, y+ 0.5);
+	private void createPieceAt(int x, int y, BlockData blockData) {
+		Location blockToUpdate = new Location(gameOrigin.getWorld(), x, 1, y);
+		if(blockData.getMaterial().name().contains("GREEN")) {
+			blockToUpdate = new Location(gameOrigin.getWorld(), x, 1.5, y);
 	    }
 		blockToUpdate = blockToUpdate.add(gameOrigin);
-		if(clear) {
-		for (Entity entity : gameOrigin.getWorld().getNearbyEntities(blockToUpdate, 1, 1, 1)) {
-			if (entity instanceof BlockDisplay) {
-				entity.remove();
-			}
-		}}
-		BlockDisplay  displayItem = (BlockDisplay) gameOrigin.getWorld().spawnEntity(blockToUpdate,
-				EntityType.BLOCK_DISPLAY);
-     
-		displayItem.setBlock(air.createBlockData());
+        BlockDisplay  displayItem = (BlockDisplay) gameOrigin.getWorld().spawnEntity(blockToUpdate,EntityType.BLOCK_DISPLAY);
+        displayItem.setBlock(blockData);
+		displayItem.setBrightness(new Display.Brightness(15, 15));
 		displayItem.setBillboard(Billboard.FIXED);
-		Transformation transf = displayItem.getTransformation();
-		transf.getScale().sub(0.5f, 0.5f, 0.5f);
-		transf.getTranslation().set(new Vector3f(-0.5F, 0, -0.5F));
-		displayItem.setTransformation(transf);
+		displayItem.setTransformation(new Transformation(
+    new Vector3f(-0.15f, 0f, -0.5f),
+    new AxisAngle4f(0, 0, 0, 1),
+    new Vector3f(0.5f, 0.5f, 0.5f),
+    new AxisAngle4f(0, 0, 1, 0)
+));
+		pool.add(new DisplayPoolEntry(displayItem,x,y));
 	}
+	
+	private void updateBlock(int x, int y, Material pieceColor) {
+		updateBlock(x,y,pieceColor,false);
+	}
+	private void updateBlock(int x, int y, Material pieceColor,boolean clear) {
+		Location blockToUpdate = new Location(gameOrigin.getWorld(), x, 1, y);
+		if(pieceColor != null && pieceColor.name().contains("GREEN")) {
+			blockToUpdate = new Location(gameOrigin.getWorld(), x, 1.5, y);
+	    }
+		blockToUpdate = blockToUpdate.add(gameOrigin);
+		boolean isInPool = false;
+		for (DisplayPoolEntry entity : pool) {
+			if (entity.x == x && entity.y == y) {
+				if(clear) {
+				    entity.display.setBlock(Material.BARRIER.createBlockData());
+				}else {
+					entity.display.setBlock(pieceColor.createBlockData());
+				}
+				isInPool = true;
+				break;
+			}
+		}
+		if(!isInPool && !clear) {
+			createPieceAt(x,y,pieceColor.createBlockData());
+		}
+	}
+
+	
 
 	public void checkBlock(Location loc) {
 		// check which piece position has been clicked
@@ -91,26 +113,57 @@ public class Board {
 		
 		if (action.equals("whitePlaced")) {
 			loc.getWorld().playSound(loc, Sound.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 0.5f, 1f);
-			loc.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, loc, piecePosition);
+			 new BukkitRunnable() {
+		            int i = 0;
+		         
+		            @Override
+		            public void run() {
+		                if (i == 4) {
+		                    cancel();
+		                    return;
+		                }
+		             
+		                
+		    			loc.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, loc, piecePosition);
+		                i++;
+		            }
+		        }.runTaskTimer(MorrisInfinity.instance, 0L, 20L);
 			repaintPieces();
 			game.switchTurn(true);
 			return;
 		} else if (action.equals("whitePlacedMill")) {
 			game.displayMessage(ChatColor.GOLD+"White has formed a mill!");
+			game.displayMessage(ChatColor.GOLD+"White must remove a piece!");
 			repaintPieces();
 			return;
 		} else if (action.equals("blackPlaced")) {
-			loc.getWorld().playSound(loc, Sound.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 0.5f, 1f);
-			loc.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, loc, piecePosition);
+			 loc.getWorld().playSound(loc, Sound.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 0.5f, 1f);
+			 new BukkitRunnable() {
+		            int i = 0;
+		         
+		            @Override
+		            public void run() {
+		                if (i == 4) {
+		                    cancel();
+		                    return;
+		                }
+		             
+		               
+		    			loc.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, loc, piecePosition);
+		                i++;
+		            }
+		        }.runTaskTimer(MorrisInfinity.instance, 0L, 20L);
 			if(game.getComputer() ==null)updatePieceSingle(piecePosition);
 			game.switchTurn(true);
 			repaintPieces();
 			return;
 		} else if (action.equals("blackPlacedMill")) {
 			game.displayMessage(ChatColor.GOLD+"Black has formed a mill!");
-			if(game.getComputer() != null)
+			game.displayMessage(ChatColor.GOLD+"Black must remove a piece!");
+			if(game.getComputer() != null) {
 			    MorrisInfinity.doBlackTurnAI();
-			repaintPieces();
+			}else
+			   repaintPieces();
 			return;
 		} else if (action.equals("whiteRemoval") || action.equals("blackRemoval")) {
 			game.switchTurn(true);
@@ -133,15 +186,15 @@ public class Board {
 		} else if (action == "white") {
 			game.displayMessage(3);
 			game.getState().setGameStage(5);
-			MorrisInfinity.game = null;
+			MorrisInfinity.setGame(null);
 		} else if (action == "black") {
 			game.displayMessage(4);
 			game.getState().setGameStage(5);
-			MorrisInfinity.game = null;
+			MorrisInfinity.setGame(null);
 		} else if (action == "draw") {
 			game.displayMessage(5);
 			game.getState().setGameStage(5);
-			MorrisInfinity.game = null;
+			MorrisInfinity.setGame(null);
 		}
 	
 	}
@@ -185,23 +238,24 @@ public class Board {
 	public void repaintPieces() {
 		numWhite = 0;
 		numBlack = 0;
-		clearDisplayItems();
 		for (int point = 0; point < game.getState().getBoardPieces().length; point++) {
+			Material selected = null;
 			if (game.getState().getBoardPieces()[point] == "white") {
 				numWhite++;
-				updateBlock(piece.values()[point].getX(), piece.values()[point].getY(), Material.WHITE_CONCRETE);
+				selected = Material.WHITE_CONCRETE;
 			} else if (game.getState().getBoardPieces()[point] == "black") {
 				numBlack++;
-				updateBlock(piece.values()[point].getX(), piece.values()[point].getY(), Material.BLACK_CONCRETE);
+				selected = Material.BLACK_CONCRETE;
 			}
 			if (game.getState().getGameStage() == 3) {
 				if (point == game.getState().getSelectedPiece()) {
-					updateBlock(piece.values()[point].getX(), piece.values()[point].getY(), Material.GREEN_WOOL);
+					selected = Material.GREEN_WOOL;
 				} else if (game.getState().getBoardPieces()[point] == null
 						&& game.getState().getMovablePositions().contains(point)) {
-					updateBlock(piece.values()[point].getX(), piece.values()[point].getY(), Material.GREEN_CARPET);
+					selected = Material.GREEN_CARPET;
 				}
 			}
+			updateBlock(piece.values()[point].getX(), piece.values()[point].getY(), selected,selected == null);
 		}
 	}
 

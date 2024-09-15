@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,9 +31,9 @@ public class Commands implements CommandExecutor, TabCompleter {
         UUID playerUUID = player.getUniqueId();
 
         if (args[0].equalsIgnoreCase("startgame")) {
-            if (MorrisInfinity.game != null) {
-                Player gamePlayer = MorrisInfinity.game.getPlayer();
-                Player gameOpponent = MorrisInfinity.game.getOpponent();
+            if (MorrisInfinity.getGame() != null) {
+                Player gamePlayer = MorrisInfinity.getGame().getPlayer();
+                Player gameOpponent = MorrisInfinity.getGame().getOpponent();
 
                 if ((gamePlayer != null && gamePlayer.getUniqueId().equals(playerUUID)) ||
                     (gameOpponent != null && gameOpponent.getUniqueId().equals(playerUUID))) {
@@ -50,37 +51,39 @@ public class Commands implements CommandExecutor, TabCompleter {
                         return true;
                     }
                     MorrisInfinity.StartPVAI(player, args[2]);
-                    player.sendMessage("Starting a new game against AI with difficulty: " + args[2]);
+                    player.sendMessage(ChatColor.GOLD+"Starting a new game against AI with difficulty: " +ChatColor.RED+ args[2]);
+                    player.sendMessage(ChatColor.GOLD+"Please select a spot to place down your piece, you have "+MorrisInfinity.getGame().getState().numberOfPieces+" pieces in this game.");
                 } else if (args[1].equalsIgnoreCase("pvp")) {
                     if (args.length < 3) {
-                        player.sendMessage("Please specify the player you want to play against.");
+                        player.sendMessage(ChatColor.GOLD+"Please specify the player you want to play against.");
                         return true;
                     }
                     Player vs = sender.getServer().getPlayer(args[2]);
                     if (vs == null) {
-                        player.sendMessage("The specified player is not online.");
+                        player.sendMessage(ChatColor.GOLD+"The specified player is not online.");
                         return true;
                     }
                     MorrisInfinity.StartPVP(player, vs);
-                    player.sendMessage("Starting a new PvP game against: " + vs.getName());
+                    player.sendMessage(ChatColor.GOLD+"Starting a new PvP game against: " + vs.getDisplayName()+". It's your turn!");
+                    vs.sendMessage(ChatColor.GOLD+player.getDisplayName()+" has challenged you to a game! It's their turn!");
                 } else {
-                    player.sendMessage("Invalid game type. Use 'ai' or 'pvp'.");
+                    player.sendMessage(ChatColor.GOLD+"Invalid game type. Use 'ai' or 'pvp'.");
                     return true;
                 }
             } else {
-                player.sendMessage("Please specify the game type (ai/pvp).");
+                player.sendMessage(ChatColor.GOLD+"Please specify the game type (ai/pvp).");
             }
             return true;
         }
 
         if (args[0].equalsIgnoreCase("endgame")) {
-            if (MorrisInfinity.game == null) {
-                player.sendMessage("No game instance found.");
+            if (MorrisInfinity.getGame() == null) {
+                player.sendMessage(ChatColor.GOLD+"No game instance found.");
                 return true;
             }
 
-            Player gamePlayer = MorrisInfinity.game.getPlayer();
-            Player gameOpponent = MorrisInfinity.game.getOpponent();
+            Player gamePlayer = MorrisInfinity.getGame().getPlayer();
+            Player gameOpponent = MorrisInfinity.getGame().getOpponent();
 
             if ((gamePlayer != null && gamePlayer.getUniqueId().equals(playerUUID)) ||
                 (gameOpponent != null && gameOpponent.getUniqueId().equals(playerUUID))) {
@@ -94,7 +97,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
 
                 // Reset or clear the game instance if necessary
-                MorrisInfinity.game = null;
+                MorrisInfinity.setGame(null);
                 player.sendMessage("Game has been ended.");
             } else {
                 player.sendMessage("You are not part of any active game.");

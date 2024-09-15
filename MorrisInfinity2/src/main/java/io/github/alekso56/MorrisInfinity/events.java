@@ -17,8 +17,8 @@ public class events implements Listener {
 	        UUID playerUUID = player.getUniqueId();
 
 	        // Check if the player is in a game
-	        if (MorrisInfinity.game != null && (MorrisInfinity.game.getPlayer() != null && MorrisInfinity.game.getPlayer().getUniqueId().equals(playerUUID) 
-	        		|| MorrisInfinity.game.getOpponent() != null && MorrisInfinity.game.getOpponent().getUniqueId().equals(playerUUID))) {
+	        if (MorrisInfinity.getGame() != null && (MorrisInfinity.getGame().getPlayer() != null && MorrisInfinity.getGame().getPlayer().getUniqueId().equals(playerUUID) 
+	        		|| MorrisInfinity.getGame().getOpponent() != null && MorrisInfinity.getGame().getOpponent().getUniqueId().equals(playerUUID))) {
 	        	Action action = event.getAction();
 
 		        if (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK) {
