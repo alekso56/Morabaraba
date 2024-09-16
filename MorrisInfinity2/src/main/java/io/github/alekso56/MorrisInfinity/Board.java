@@ -153,7 +153,6 @@ public class Board {
 		                i++;
 		            }
 		        }.runTaskTimer(MorrisInfinity.instance, 0L, 20L);
-			if(game.getComputer() ==null)updatePieceSingle(piecePosition);
 			game.switchTurn(true);
 			repaintPieces();
 			return;
@@ -167,7 +166,7 @@ public class Board {
 			return;
 		} else if (action.equals("whiteRemoval") || action.equals("blackRemoval")) {
 			game.switchTurn(true);
-			updatePieceSingle(piecePosition);
+			repaintPieces();
 			return;
 		} else if (action.equals("invalidRemoval")) {
 			game.displayMessage(1);
