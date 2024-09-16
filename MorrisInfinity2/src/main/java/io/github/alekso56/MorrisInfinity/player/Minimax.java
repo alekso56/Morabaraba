@@ -35,9 +35,10 @@ public class Minimax {
 		ArrayList<Move> validMoves = findValidMoves(player); 
 		
 		//if there are no valid moves, this means in this state the game would end.
-		if(validMoves.isEmpty()) {
+		String winner = copyState.hasGameEnded();
+		if(validMoves.isEmpty() || winner != null || MorrisInfinity.getGame() == null) {
+			validMoves.clear();
 			copyState.switchTurn();
-			String winner = copyState.hasGameEnded();
 			if(winner=="draw") {
 				return new MoveScore(-1, -1, 0);
 			}
@@ -290,7 +291,7 @@ public class Minimax {
 			otherTurn = "black";
 		}
 		ArrayList<Move> validMoves = new ArrayList<Move>();
-		
+
 		if(copyState.getGameStage()==1) {
 			
 			for(int i=0; i<copyState.getBoardPieces().length; i++) {
