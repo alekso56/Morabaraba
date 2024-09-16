@@ -105,7 +105,7 @@ public class Game {
 		    		for(Player pl : Bukkit.getServer().getOnlinePlayers()) {
 		    			if(pl.getUniqueId().equals(player.getUniqueId()) || opponent != null && pl.getUniqueId().equals(opponent.getUniqueId())) continue;
 		    			Location location = pl.getLocation();
-		    			if(location.getWorld().getUID().equals(Board.gameOrigin.getWorld().getUID()) && location.distanceSquared(Board.gameOrigin) < 30) {
+		    			if(location.getWorld().getUID().equals(Board.gameOrigin.getWorld().getUID()) && location.distanceSquared(Board.gameOrigin) < 1000) {
 		    				pl.sendMessage(message);
 		    			}
 		    		}
