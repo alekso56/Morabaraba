@@ -134,6 +134,7 @@ public class MorrisInfinity extends JavaPlugin {
 						        }.runTaskTimer(instance, 0L, 20L);
 							}
 							boolean computerNeedsAdditionalTurn = getGame().getComputer().makeMove(bestMove, "black");
+							if(getGame()== null) return;
 							if(!computerNeedsAdditionalTurn) {
 								getGame().switchTurn(true);		
 								getGame().getBoard().repaintPieces();
@@ -206,7 +207,7 @@ public class MorrisInfinity extends JavaPlugin {
 	        }
             if(getGame().getPlayer() != null && getGame().getState().getTurn().equals("white") &&  getGame().getPlayer().getUniqueId().equals(player.getUniqueId())) {
 	        	getGame().getBoard().checkBlock(clickedBlock.getLocation());
-	        	if(getGame().getState().getTurn().equals("black") && getGame().getComputer() != null) {
+	        	if(getGame() != null && getGame().getState().getTurn().equals("black") && getGame().getComputer() != null) {
 	        		doBlackTurnAI();
 	        	}
 	        	return;

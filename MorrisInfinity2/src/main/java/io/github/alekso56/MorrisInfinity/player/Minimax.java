@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import io.github.alekso56.MorrisInfinity.Board;
 import io.github.alekso56.MorrisInfinity.Game;
 import io.github.alekso56.MorrisInfinity.MorrisInfinity;
 import io.github.alekso56.MorrisInfinity.state.GameState;
@@ -154,7 +159,7 @@ public class Minimax {
 			}
 		}
 		
-		if(allSameScore) {
+		if(allSameScore && moves.size() > 0) {
 			Random rand = new Random();
 			bestMoveIndex = rand.nextInt(moves.size());
 		}

@@ -2,6 +2,7 @@ package io.github.alekso56.MorrisInfinity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import io.github.alekso56.MorrisInfinity.player.Minimax;
@@ -16,7 +17,7 @@ public class Game {
 	private Player opponent;
 
 	private String[] gameMessages = {ChatColor.GOLD+"A Mill is formed! Select a piece not in a mill to remove", ChatColor.RED+"Invalid Piece Removal", 
-			ChatColor.GOLD+"A mill was formed, you may select a piece inside a mill to remove", ChatColor.GOLD+"The winner is White", ChatColor.GOLD+"The winner is Black", ChatColor.GOLD+"The game is a draw"};
+			ChatColor.GOLD+"A mill was formed, you may select a piece inside a mill to remove", ChatColor.GOLD+"The winner is &player", ChatColor.GOLD+"The winner is &opponent", ChatColor.GOLD+"The game is a draw"};
 	
 	public Game(Player pl) {
 		state = new GameState();
@@ -90,9 +91,27 @@ public class Game {
 
 			@Override
 			public void run() {
-				player.sendMessage(gameMessages[i]);
+				String message = gameMessages[i];
+				message = message.replace("&player", player.getDisplayName());
 				if(opponent != null) {
-					opponent.sendMessage(gameMessages[i]);
+					message = message.replace("&opponent", opponent.getDisplayName());
+					opponent.sendMessage(message);
+				}
+				player.sendMessage(message);
+				switch(i) {
+				case 3:
+				case 4:
+				case 5:
+		    		for(Player pl : Bukkit.getServer().getOnlinePlayers()) {
+		    			if(pl.getUniqueId().equals(player.getUniqueId()) || opponent != null && pl.getUniqueId().equals(opponent.getUniqueId())) continue;
+		    			Location location = pl.getLocation();
+		    			if(location.getWorld().getUID().equals(Board.gameOrigin.getWorld().getUID()) && location.distanceSquared(Board.gameOrigin) < 30) {
+		    				pl.sendMessage(message);
+		    			}
+		    		}
+		    		break;
+		    	default:
+		    			break;
 				}
 			}
 			
