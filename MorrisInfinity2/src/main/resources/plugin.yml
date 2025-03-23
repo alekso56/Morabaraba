@@ -3,7 +3,7 @@ version: 1.0.0
 main: io.github.alekso56.MorrisInfinity.MorrisInfinity
 author: alekso56
 description: Play a game of morris
-api-version: 1.19
+api-version: 1.21
 commands:
      morris:
       description: Start/stop games.

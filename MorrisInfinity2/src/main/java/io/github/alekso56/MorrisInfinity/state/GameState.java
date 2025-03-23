@@ -2,8 +2,6 @@ package io.github.alekso56.MorrisInfinity.state;
 
 import java.util.ArrayList;
 
-import org.bukkit.ChatColor;
-
 public class GameState {
 
 	//18 * (1) + 26 * (2) + 1 * (3) + 9 * (4) + 10 * (5) + 7 * (6)

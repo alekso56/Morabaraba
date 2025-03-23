@@ -1,7 +1,6 @@
 package io.github.alekso56.MorrisInfinity;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,15 +12,10 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Display.Billboard;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ItemDisplay;
-import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import io.github.alekso56.MorrisInfinity.state.DisplayPoolEntry;
@@ -124,7 +118,7 @@ public class Board {
 		                }
 		             
 		                
-		    			loc.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, loc, piecePosition);
+		    			loc.getWorld().spawnParticle(Particle.EXPLOSION, loc, piecePosition);
 		                i++;
 		            }
 		        }.runTaskTimer(MorrisInfinity.instance, 0L, 20L);
@@ -149,7 +143,7 @@ public class Board {
 		                }
 		             
 		               
-		    			loc.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, loc, piecePosition);
+		    			loc.getWorld().spawnParticle(Particle.EXPLOSION, loc, piecePosition);
 		                i++;
 		            }
 		        }.runTaskTimer(MorrisInfinity.instance, 0L, 20L);

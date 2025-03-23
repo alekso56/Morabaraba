@@ -3,7 +3,6 @@ package io.github.alekso56.MorrisInfinity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -15,8 +14,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -92,7 +89,7 @@ public class MorrisInfinity extends JavaPlugin {
 						                    return;
 						                }
 						             
-						                world.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, world, move.ordinal());
+						                world.getWorld().spawnParticle(Particle.EXPLOSION, world, move.ordinal());
 						                i++;
 						            }
 						        }.runTaskTimer(instance, 0L, 20L);
@@ -110,7 +107,7 @@ public class MorrisInfinity extends JavaPlugin {
 						                    return;
 						                }
 						             
-						                world.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, world, move.ordinal());
+						                world.getWorld().spawnParticle(Particle.EXPLOSION, world, move.ordinal());
 						                i++;
 						            }
 						        }.runTaskTimer(instance, 0L, 20L);
@@ -128,7 +125,7 @@ public class MorrisInfinity extends JavaPlugin {
 						                    return;
 						                }
 						             
-						                world.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, world, move.ordinal());
+						                world.getWorld().spawnParticle(Particle.EXPLOSION, world, move.ordinal());
 						                i++;
 						            }
 						        }.runTaskTimer(instance, 0L, 20L);
